@@ -6,7 +6,7 @@ interface Props {
   description?: string;
   homepage?: boolean;
 }
-const { title, description = 'Divesh Gupta is a security researcher, founder, and game developer at the University of Georgia. Firmware vulnerability research, autonomous CTF tooling, and The Hack Pack.', homepage = false } = Astro.props;
+const { title, description = 'Divesh Gupta is a security researcher, founder, and game developer at the University of Georgia.', homepage = false } = Astro.props;
 const path = Astro.url.pathname;
 const canonical = new URL(path, Astro.site).href;
 const ogImage = new URL('/og.png', Astro.site).href;
