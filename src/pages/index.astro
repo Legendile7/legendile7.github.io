@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Divesh Gupta">
+  <section class="hero">
+    <div class="intro">
+      <h1 data-decode>Divesh Gupta</h1>
+      <p class="lead">
+        I find bugs in firmware, build security tooling, and run a cybersecurity club at the University of Georgia. I also cofound startups and make games, including architecting an engine that AI agents build.
+      </p>
+      <p class="where">
+        <a href="/about/">More about me</a>, <a href="/work/">what I've built</a>, or <a href="/resume/">the resume</a>.
+      </p>
+    </div>
+    <canvas id="orb" width="520" height="520" aria-hidden="true"></canvas>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: center;
+    min-height: calc(100vh - 220px);
+    max-width: 1100px;
+  }
+  .intro h1 { margin-bottom: 1rem; }
+  .where { color: var(--ink-2); }
+  #orb { width: 100%; max-width: 520px; height: auto; justify-self: center; }
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; min-height: 0; }
+    #orb { max-width: 320px; order: -1; margin-top: 8px; }
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('orb') as HTMLCanvasElement | null;
+  if (canvas) {
+    const ctx = canvas.getContext('2d')!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const S = 520;
+    canvas.width = S * dpr;
+    canvas.height = S * dpr;
+    ctx.scale(dpr, dpr);
+
+    const N = 420;
+    const golden = Math.PI * (3 - Math.sqrt(5));
+    const R = 190;
+    const pts: { x: number; y: number; z: number; sx: number; sy: number; sz: number }[] = [];
+    for (let i = 0; i < N; i++) {
+      const y = 1 - (i / (N - 1)) * 2;
+      const r = Math.sqrt(1 - y * y);
+      const t = golden * i;
+      const seed = Math.sin(i * 12.9898) * 43758.5453;
+      const k = 1.6 + (seed - Math.floor(seed)) * 1.4;
+      pts.push({ x: Math.cos(t) * r, y, z: Math.sin(t) * r, sx: Math.cos(t) * r * k, sy: y * k, sz: Math.sin(t) * r * k });
+    }
+
+    const css = getComputedStyle(document.documentElement);
+    let ink = css.getPropertyValue('--ink').trim();
+    let accent = css.getPropertyValue('--accent').trim();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      const c = getComputedStyle(document.documentElement);
+      ink = c.getPropertyValue('--ink').trim();
+      accent = c.getPropertyValue('--accent').trim();
+    });
+
+    const start = performance.now();
+    const ease = (u: number) => 1 - Math.pow(1 - u, 3);
+    let running = true;
+    document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) requestAnimationFrame(draw); });
+
+    function draw(now: number) {
+      const el = (now - start) / 1000;
+      const a = reduce ? 1 : ease(Math.min(1, el / 1.8));
+      const rotY = reduce ? 0.6 : el * 0.12;
+      const rotX = -0.35;
+      const cy = Math.cos(rotY), sy = Math.sin(rotY), cx = Math.cos(rotX), sx = Math.sin(rotX);
+
+      ctx.clearRect(0, 0, S, S);
+      const proj: { X: number; Y: number; d: number }[] = [];
+      for (const p of pts) {
+        let x = p.sx + (p.x - p.sx) * a;
+        let y = p.sy + (p.y - p.sy) * a;
+        let z = p.sz + (p.z - p.sz) * a;
+        const x1 = x * cy - z * sy, z1 = x * sy + z * cy;
+        const y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
+        const per = 1 / (1 + z2 * 0.25);
+        proj.push({ X: S / 2 + x1 * R * per, Y: S / 2 + y1 * R * per, d: z2 });
+      }
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = accent;
+      ctx.globalAlpha = 0.45 * a;
+      ctx.beginPath();
+      const M = 900, turns = 9;
+      for (let i = 0; i <= M; i++) {
+        const u = i / M;
+        const y = 1 - u * 2;
+        const r = Math.sqrt(Math.max(0, 1 - y * y)) * a;
+        const t = u * Math.PI * 2 * turns;
+        const x = Math.cos(t) * r, z = Math.sin(t) * r;
+        const x1 = x * cy - z * sy, z1 = x * sy + z * cy;
+        const y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
+        const per = 1 / (1 + z2 * 0.25);
+        const X = S / 2 + x1 * R * per, Y = S / 2 + y1 * R * per;
+        if (i === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = ink;
+      for (const q of proj) {
+        const front = Math.min(1, Math.max(0, (q.d + 1) / 2));
+        ctx.globalAlpha = 0.2 + front * 0.7;
+        const r = 1 + front * 1.4;
+        ctx.beginPath();
+        ctx.arc(q.X, q.Y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      if (!reduce && running) requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  }
+</script>

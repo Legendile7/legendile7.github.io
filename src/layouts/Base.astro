@@ -1,0 +1,173 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = 'Divesh Gupta. Security engineer, founder, and game developer in Athens, Georgia.' } = Astro.props;
+const path = Astro.url.pathname;
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/about/', label: 'About' },
+  { href: '/work/', label: 'Work' },
+  { href: '/resume/', label: 'Resume' },
+];
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="top">
+      <a class="wordmark" href="/">Divesh Gupta</a>
+      <nav aria-label="Main">
+        {links.map((l) => (
+          <a href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>{l.label}</a>
+        ))}
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="bottom">
+      <a href="mailto:Divesh.Gupta@uga.edu">Divesh.Gupta@uga.edu</a>
+      <a href="https://github.com/Legendile7">GitHub</a>
+      <a href="https://www.linkedin.com/in/divesh2027/">LinkedIn</a>
+    </footer>
+
+    <script>
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&*';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const seen = sessionStorage.getItem('decoded') === '1';
+
+      function decode(el: HTMLElement) {
+        const text = el.textContent ?? '';
+        let frame = 0;
+        const total = text.length * 2 + 6;
+        const tick = () => {
+          const reveal = Math.max(0, (frame - 6) / 2);
+          el.textContent = text
+            .split('')
+            .map((c, i) => (c === ' ' ? ' ' : i < reveal ? c : chars[(Math.random() * chars.length) | 0]))
+            .join('');
+          frame++;
+          if (frame <= total) requestAnimationFrame(() => setTimeout(tick, 28));
+          else el.textContent = text;
+        };
+        tick();
+      }
+
+      if (!reduce && !seen) {
+        document.querySelectorAll<HTMLElement>('[data-decode]').forEach((el, i) => {
+          el.setAttribute('aria-label', el.textContent ?? '');
+          setTimeout(() => decode(el), 120 + i * 160);
+        });
+        sessionStorage.setItem('decoded', '1');
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg: #ffffff;
+    --ink: #1b1b1b;
+    --ink-2: #5c5c5c;
+    --ink-3: #9a9a9a;
+    --rule: #e4e4e4;
+    --accent: #722f37;
+    --measure: 62ch;
+    --gutter: clamp(20px, 5vw, 56px);
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161616;
+      --ink: #ececec;
+      --ink-2: #a8a8a8;
+      --ink-3: #6f6f6f;
+      --rule: #2e2e2e;
+      --accent: #d46a7e;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  a { color: var(--accent); text-decoration: none; text-underline-offset: 3px; }
+  a:hover, a:focus-visible { text-decoration: underline; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  h1, h2, h3 { font-weight: 500; line-height: 1.15; margin: 0; letter-spacing: -0.01em; }
+  h1 { font-size: clamp(2rem, 1.4rem + 2.6vw, 3.4rem); font-variation-settings: 'opsz' 96; }
+  h2 { font-size: 1.6rem; font-variation-settings: 'opsz' 48; }
+  h3 { font-size: 1.1rem; }
+  p { margin: 0 0 1em; max-width: var(--measure); }
+  p:last-child { margin-bottom: 0; }
+
+  .top, .bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    padding: 24px var(--gutter);
+  }
+  .top { align-items: baseline; justify-content: space-between; }
+  .wordmark { color: var(--ink); font-weight: 500; }
+  .top nav { display: flex; gap: 22px; }
+  .top nav a { color: var(--ink-2); }
+  .top nav a[aria-current='page'] { color: var(--ink); text-decoration: underline; }
+
+  main { flex: 1; padding: 24px var(--gutter) 80px; }
+
+  .bottom { border-top: 1px solid var(--rule); color: var(--ink-2); font-size: 0.95rem; }
+  .bottom a { color: var(--ink-2); }
+
+  .lead { font-size: 1.25rem; color: var(--ink-2); }
+  .section { margin-top: 3.5rem; }
+  .section + .section { margin-top: 4rem; }
+  .section h2 { margin-bottom: 1.25rem; }
+
+  .list { list-style: none; margin: 0; padding: 0; max-width: 760px; }
+  .list li {
+    border-top: 1px solid var(--rule);
+    padding: 16px 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 24px;
+    align-items: baseline;
+  }
+  .list li:last-child { border-bottom: 1px solid var(--rule); }
+  .list .name { font-weight: 500; color: var(--ink); }
+  .list .when { color: var(--ink-3); font-size: 0.95rem; white-space: nowrap; }
+  .list .desc { grid-column: 1 / -1; color: var(--ink-2); margin: 0; }
+  .list .desc a { white-space: nowrap; }
+
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    .list li { grid-template-columns: 1fr; }
+    .list .when { grid-row: 1; }
+  }
+</style>

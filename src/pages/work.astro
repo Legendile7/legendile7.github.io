@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+
+const groups = [
+  {
+    name: 'Security',
+    items: [
+      { name: 'Firmware zero-day pipeline', when: '2026', desc: 'Automated vulnerability research for embedded devices. Rehosts binary firmware under QEMU, drives AFL++ fuzzing and Semgrep triage, and hands candidates to an LLM for analysis. Several zero-days found; one reproduced on physical router hardware and in coordinated disclosure with the vendor.' },
+      { name: 'Alpha', when: '2026', desc: 'Autonomous CTF solving framework in Python. One AI controller per challenge, executing only policy-approved commands in isolated Docker containers, with prompt-injection quarantine and operator-gated flag submission. Placed 2nd in US/Canada at the CSAW CTF Qualifiers 2026.' },
+      { name: 'ESP32 gateway security research', when: '2026', desc: 'Co-authored an IEEE-format paper with a faculty advisor on surfacing concurrency, classifier, and RFID/EEPROM bugs in smart-home gateways by recording multi-stream peripheral evidence in emulation. Finalist, CSAW Embedded Security Challenge 2026.' },
+      { name: 'The Hack Pack', when: '2024 to now', desc: 'Founded and lead UGA\u2019s applied cybersecurity club: 300 members, 10+ workshops, national placements across 10+ competitions. Built <a href="https://thehackpack.org">thehackpack.org</a>, a training platform with 50+ practice challenges on isolated instances and built-in competition hosting.', html: true },
+      { name: 'UGA CyberArch', when: '2024 to now', desc: 'R&amp;D lead for a clinic providing free CIS IG1 security reviews to Georgia small businesses and local governments. Standardized the review framework, designed summer camps for high school students, and presented the model at national conferences.', html: true },
+    ],
+  },
+  {
+    name: 'Startups',
+    items: [
+      { name: 'Zetadeck', when: '2026', desc: 'Cofounder. A workspace for early-stage teams that keeps work and money on one database, with an MCP server so AI assistants can act on it. Live at <a href="https://zetadeck.com">zetadeck.com</a>.', html: true },
+      { name: 'RiskGuard', when: 'In design', desc: 'Automated security compliance for pre-seed startups, starting with a free SOC 2 gap-analysis scanner. Built on Cloudflare Workers and Supabase.' },
+    ],
+  },
+  {
+    name: 'Games',
+    items: [
+      { name: 'Poima Engine', when: '2026', desc: 'An agent-native 3D game engine under Overshock Studios: a headless C++20 core with a documented world API that humans and AI agents edit through, plus Vulkan rendering and an optional desktop editor. I architect it and direct the agents that build it. Source on <a href="https://github.com/OvershockStudios/poimaengine">GitHub</a>.', html: true },
+      { name: 'Games', when: 'Ongoing', desc: 'Games and game jam entries under Overshock Studios.' },
+      { name: 'Neofactum', when: 'Ongoing', desc: 'An RPG overhaul for Minecraft, folding in Warband, a mob AI overhaul with squad tactics and a nemesis system. Published as Renasca.' },
+    ],
+  },
+];
+---
+<Base title="Work by Divesh Gupta">
+  <h1 data-decode>Work</h1>
+  {groups.map((g) => (
+    <div class="section">
+      <h2>{g.name}</h2>
+      <ul class="list">
+        {g.items.map((it) => (
+          <li>
+            <span class="name">{it.name}</span>
+            <span class="when">{it.when}</span>
+            {it.html ? <p class="desc" set:html={it.desc} /> : <p class="desc">{it.desc}</p>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</Base>

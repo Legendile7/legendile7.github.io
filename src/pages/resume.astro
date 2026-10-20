@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Resume of Divesh Gupta">
+  <h1 data-decode>Resume</h1>
+  <p class="meta"><a href="/Divesh_Gupta_Resume.pdf" download>Download the PDF</a> or <a href="/Divesh_Gupta_Resume.pdf">open it in a new tab</a>.</p>
+  <iframe class="pdf" src="/Divesh_Gupta_Resume.pdf#view=FitH" title="Divesh Gupta resume"></iframe>
+</Base>
+
+<style>
+  .meta { margin: 1.25rem 0 1.5rem; color: var(--ink-2); }
+  .pdf { width: 100%; max-width: 900px; height: 80vh; border: 1px solid var(--rule); background: #fff; }
+</style>
