@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import Starfield from '../components/Starfield.astro';
 import Horizon from '../components/Horizon.astro';
 interface Props {
@@ -38,10 +39,12 @@ const person = {
     'https://www.curseforge.com/members/renascastudios/projects',
   ],
 };
+const hasPosts = (await getCollection('blog', ({ data }) => !data.draft)).length > 0;
 const links = [
   { href: '/', label: 'Home' },
   { href: '/about/', label: 'About' },
   { href: '/work/', label: 'Work' },
+  ...(hasPosts ? [{ href: '/blog/', label: 'Blog' }] : []),
   { href: '/resume/', label: 'Resume' },
 ];
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));

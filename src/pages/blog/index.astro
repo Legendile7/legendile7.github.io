@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+---
+<Base title="Blog by Divesh Gupta" description="Notes from Divesh Gupta on security research, tools, and games.">
+  <h1 data-decode>Blog</h1>
+  <ul class="list section">
+    {posts.map((post) => (
+      <li>
+        <a class="name" href={`/blog/${post.id}/`}>{post.data.title}</a>
+        <span class="when">{fmt(post.data.date)}</span>
+        <p class="desc">{post.data.description}</p>
+      </li>
+    ))}
+  </ul>
+</Base>

@@ -1,0 +1,35 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+---
+<Base title={`${post.data.title} by Divesh Gupta`} description={post.data.description}>
+  <article class="post">
+    <p class="when">{fmt(post.data.date)}</p>
+    <h1>{post.data.title}</h1>
+    <div class="prose"><Content /></div>
+  </article>
+</Base>
+
+<style>
+  .post { max-width: var(--measure); }
+  .when { color: var(--ink-3); font-size: 0.95rem; margin-bottom: 12px; }
+  .post h1 { margin-bottom: 2rem; }
+  .prose :global(h2) { font-size: 1.3rem; color: var(--ink); margin: 2.5rem 0 1rem; }
+  .prose :global(h3) { margin: 2rem 0 0.75rem; }
+  .prose :global(p) { margin: 0 0 1.2em; }
+  .prose :global(ul), .prose :global(ol) { padding-left: 1.4em; margin: 0 0 1.2em; }
+  .prose :global(li) { margin-bottom: 0.4em; }
+  .prose :global(pre) { padding: 16px 20px; overflow-x: auto; border: 1px solid var(--rule); background: rgba(0, 0, 0, 0.35); font-size: 0.9rem; line-height: 1.5; margin: 0 0 1.4em; }
+  .prose :global(code) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+  .prose :global(:not(pre) > code) { padding: 1px 5px; background: rgba(255, 255, 255, 0.06); }
+  .prose :global(img) { max-width: 100%; height: auto; }
+  .prose :global(blockquote) { margin: 0 0 1.2em; padding-left: 16px; border-left: 2px solid var(--accent); color: var(--ink-2); }
+  .prose :global(hr) { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+</style>
