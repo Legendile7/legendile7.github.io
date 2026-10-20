@@ -1,0 +1,109 @@
+---
+// Night skyline across a river: towers on the far bank, their lights
+// reflected and broken up in the water below. Generated once at build time.
+const W = 1600, H = 300, BANK = 190;
+let seed = 2718;
+const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+
+type Tower = { x: number; w: number; h: number; spire: boolean; windows: { x: number; y: number; dim: boolean }[] };
+const towers: Tower[] = [];
+let x = -10;
+while (x < W + 10) {
+  const w = 12 + rand() * 30;
+  const centrality = Math.max(0, 1 - Math.abs(x + w / 2 - 800) / 700);
+  const h = 14 + rand() * 30 + centrality * centrality * 150 + (rand() < 0.12 && centrality > 0.5 ? 50 : 0);
+  const windows: Tower['windows'] = [];
+  for (let wy = BANK - h + 8; wy < BANK - 6; wy += 7) {
+    for (let wx = x + 3; wx < x + w - 3; wx += 5) {
+      if (rand() < 0.4) windows.push({ x: wx, y: wy, dim: rand() < 0.45 });
+    }
+  }
+  towers.push({ x, w, h, spire: h > 150 && rand() < 0.6, windows });
+  x += w + (rand() < 0.35 ? 10 : 2);
+}
+// Low distant blocks behind the main skyline for depth.
+const distant: { x: number; w: number; h: number }[] = [];
+for (let dx = -10; dx < W + 10; dx += 18 + rand() * 30) {
+  distant.push({ x: dx, w: 20 + rand() * 40, h: 30 + rand() * 60 });
+}
+const ripples: string[] = [];
+for (let i = 0; i < 70; i++) {
+  const rx = rand() * W, ry = BANK + 6 + rand() * 90, len = 20 + rand() * 90;
+  ripples.push(`M${rx.toFixed(1)} ${ry.toFixed(1)} h${len.toFixed(1)}`);
+}
+---
+<svg class="horizon" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <defs>
+    <radialGradient id="cityglow" cx="0.5" cy="1" r="0.5">
+      <stop offset="0" stop-color="#f1b468" stop-opacity="0.22" />
+      <stop offset="0.6" stop-color="#d98e5a" stop-opacity="0.05" />
+      <stop offset="1" stop-color="#d98e5a" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a0e1c" />
+      <stop offset="1" stop-color="#03040a" />
+    </linearGradient>
+    <linearGradient id="reflectfade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.6" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+    <mask id="reflectmask"><rect x="0" y={BANK} width={W} height={H - BANK} fill="url(#reflectfade)" /></mask>
+    <filter id="waterwobble" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015 0.09" numOctaves="2" seed="4" result="noise">
+        <animate attributeName="baseFrequency" values="0.015 0.09;0.02 0.11;0.015 0.09" dur="14s" repeatCount="indefinite" />
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" />
+      <feGaussianBlur stdDeviation="0.6" />
+    </filter>
+  </defs>
+
+  <ellipse cx="800" cy={BANK} rx="700" ry="150" fill="url(#cityglow)" />
+
+  <g class="distant" fill="#0b0e1a">
+    {distant.map((d) => <rect x={d.x.toFixed(1)} y={(BANK - d.h).toFixed(1)} width={d.w.toFixed(1)} height={d.h.toFixed(1)} />)}
+  </g>
+
+  <g class="city">
+    {towers.map((t) => (
+      <>
+        <rect x={t.x.toFixed(1)} y={(BANK - t.h).toFixed(1)} width={t.w.toFixed(1)} height={t.h.toFixed(1)} fill="#06080f" />
+        {t.spire && <rect x={(t.x + t.w / 2 - 1).toFixed(1)} y={(BANK - t.h - 30).toFixed(1)} width="2" height="30" fill="#06080f" />}
+        {t.spire && <circle class="beacon" cx={(t.x + t.w / 2).toFixed(1)} cy={(BANK - t.h - 31).toFixed(1)} r="1.6" fill="#ff5a5a" />}
+      </>
+    ))}
+    <g class="windows">
+      {towers.flatMap((t) => t.windows.map((wn) => (
+        <rect x={wn.x.toFixed(1)} y={wn.y.toFixed(1)} width="2.4" height="3.4" fill={wn.dim ? '#8a6a3f' : '#f3c98a'} opacity={wn.dim ? 0.55 : 0.9} />
+      )))}
+    </g>
+  </g>
+
+  <rect x="0" y={BANK} width={W} height={H - BANK} fill="url(#water)" />
+  <g class="reflection" mask="url(#reflectmask)">
+    <g filter="url(#waterwobble)">
+      <g transform={`translate(0 ${BANK * 2}) scale(1 -1.3)`}>
+        {towers.map((t) => <rect x={t.x.toFixed(1)} y={(BANK - t.h).toFixed(1)} width={t.w.toFixed(1)} height={t.h.toFixed(1)} fill="#0c1020" />)}
+        {towers.flatMap((t) => t.windows.map((wn) => (
+          <rect x={wn.x.toFixed(1)} y={wn.y.toFixed(1)} width="2.4" height="2" fill={wn.dim ? '#8a6a3f' : '#f3c98a'} opacity={wn.dim ? 0.4 : 0.7} />
+        )))}
+      </g>
+    </g>
+  </g>
+  <path class="ripples" d={ripples.join(' ')} stroke="#0f1428" stroke-width="1.2" fill="none" />
+  <rect x="0" y={BANK - 0.5} width={W} height="1" fill="#141a30" />
+</svg>
+
+<style>
+  .horizon {
+    display: block; width: 100%; height: auto; aspect-ratio: 1600 / 300;
+    margin-top: clamp(-120px, -9vw, -40px); pointer-events: none;
+  }
+  .beacon { animation: beacon 2.4s ease-in-out infinite; }
+  .windows rect:nth-child(7n) { animation: flicker 6s linear infinite; }
+  .windows rect:nth-child(11n) { animation: flicker 9s linear infinite reverse; }
+  .ripples { animation: ripple 9s ease-in-out infinite alternate; }
+  @keyframes beacon { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+  @keyframes flicker { 0%, 92%, 100% { opacity: 0.9; } 94% { opacity: 0.2; } 96% { opacity: 0.8; } }
+  @keyframes ripple { from { transform: translateX(0); opacity: 0.8; } to { transform: translateX(14px); opacity: 0.4; } }
+  @media (prefers-reduced-motion: reduce) { .beacon, .windows rect, .ripples { animation: none; } }
+</style>

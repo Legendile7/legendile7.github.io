@@ -1,13 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
 ---
-<Base title="Resume of Divesh Gupta">
+<Base title="Resume of Divesh Gupta" description="Resume of Divesh Gupta, security researcher and computer science student at the University of Georgia, class of 2027. Download as PDF.">
   <h1 data-decode>Resume</h1>
-  <p class="meta"><a href="/Divesh_Gupta_Resume.pdf" download>Download the PDF</a> or <a href="/Divesh_Gupta_Resume.pdf">open it in a new tab</a>.</p>
+  <div class="meta"><a class="text-link" href="/Divesh_Gupta_Resume.pdf" download><Icon name="download" size={18} /> Download the PDF</a><a href="/Divesh_Gupta_Resume.pdf" target="_blank" rel="noopener">Open in a new tab</a></div>
   <iframe class="pdf" src="/Divesh_Gupta_Resume.pdf#view=FitH" title="Divesh Gupta resume"></iframe>
 </Base>
 
 <style>
-  .meta { margin: 1.25rem 0 1.5rem; color: var(--ink-2); }
-  .pdf { width: 100%; max-width: 900px; height: 80vh; border: 1px solid var(--rule); background: #fff; }
+  .meta { display: flex; flex-wrap: wrap; gap: 16px 32px; margin: 1.25rem 0 2rem; }
+  .pdf { display: block; width: 100%; height: 80vh; border: 1px solid var(--rule-2); background: #fff; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
 </style>

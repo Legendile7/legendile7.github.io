@@ -1,48 +1,153 @@
 ---
 import Base from '../layouts/Base.astro';
 
-const groups = [
+interface WorkItem {
+  name: string;
+  when: string;
+  desc: string;
+  html?: boolean;
+  projects?: { name: string; href?: string; desc: string }[];
+}
+const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const groups: { name: string; items: WorkItem[] }[] = [
   {
-    name: 'Security',
+    name: 'Experience',
     items: [
-      { name: 'Firmware zero-day pipeline', when: '2026', desc: 'Automated vulnerability research for embedded devices. Rehosts binary firmware under QEMU, drives AFL++ fuzzing and Semgrep triage, and hands candidates to an LLM for analysis. Several zero-days found; one reproduced on physical router hardware and in coordinated disclosure with the vendor.' },
-      { name: 'Alpha', when: '2026', desc: 'Autonomous CTF solving framework in Python. One AI controller per challenge, executing only policy-approved commands in isolated Docker containers, with prompt-injection quarantine and operator-gated flag submission. Placed 2nd in US/Canada at the CSAW CTF Qualifiers 2026.' },
-      { name: 'ESP32 gateway security research', when: '2026', desc: 'Co-authored an IEEE-format paper with a faculty advisor on surfacing concurrency, classifier, and RFID/EEPROM bugs in smart-home gateways by recording multi-stream peripheral evidence in emulation. Finalist, CSAW Embedded Security Challenge 2026.' },
-      { name: 'The Hack Pack', when: '2024 to now', desc: 'Founded and lead UGA\u2019s applied cybersecurity club: 300 members, 10+ workshops, national placements across 10+ competitions. Built <a href="https://thehackpack.org">thehackpack.org</a>, a training platform with 50+ practice challenges on isolated instances and built-in competition hosting.', html: true },
-      { name: 'UGA CyberArch', when: '2024 to now', desc: 'R&amp;D lead for a clinic providing free CIS IG1 security reviews to Georgia small businesses and local governments. Standardized the review framework, designed summer camps for high school students, and presented the model at national conferences.', html: true },
+      {
+        name: 'VaultPoint Systems, Cofounder', when: '2026 to now',
+        desc: 'Cofounded through UGA’s Franklin CREATE program. I lead product and engineering. <a href="https://vaultpoint.systems" target="_blank" rel="noopener">vaultpoint.systems</a>', html: true,
+        projects: [
+          { name: 'Zetadeck', href: 'https://zetadeck.com', desc: 'A workspace that brings work and money together, with an MCP server for AI assistants. Live now.' },
+          { name: 'RiskGuard', href: 'https://vaultpoint.systems/products/riskguard', desc: 'Security compliance for pre-seed startups, starting with a free SOC 2 gap-analysis scanner. In design.' },
+        ],
+      },
+      { name: 'UGA CyberArch, R&D Lead', when: '2025 to now', desc: 'A clinic giving free security reviews to Georgia governments, schools, and small businesses. I lead the nine-person R&amp;D team and <a href="#talks">present the model</a> at conferences. Attended the 2026 EDUCAUSE Annual Conference as a Professional Pipeline Scholar.', html: true },
+      { name: 'The Hack Pack, Founding President', when: '2024 to now', desc: 'Founded UGA’s applied cybersecurity club: 300 members, national placements, and a training platform I built at <a href="https://thehackpack.org" target="_blank" rel="noopener">thehackpack.org</a>. Team record on <a href="https://ctftime.org/team/315917" target="_blank" rel="noopener">CTFtime</a>.', html: true },
     ],
   },
   {
-    name: 'Startups',
+    name: 'Security',
     items: [
-      { name: 'Zetadeck', when: '2026', desc: 'Cofounder. A workspace for early-stage teams that keeps work and money on one database, with an MCP server so AI assistants can act on it. Live at <a href="https://zetadeck.com">zetadeck.com</a>.', html: true },
-      { name: 'RiskGuard', when: 'In design', desc: 'Automated security compliance for pre-seed startups, starting with a free SOC 2 gap-analysis scanner. Built on Cloudflare Workers and Supabase.' },
+      { name: 'Firmware Zero-Day Pipeline', when: '2026', desc: 'Rehosts router firmware under QEMU, fuzzes it, and hands candidates to an LLM. Three zero-days so far, one in coordinated disclosure.' },
+      { name: 'Alpha', when: '2026', desc: 'Autonomous CTF solver. One AI controller per challenge, sandboxed in Docker and limited to policy-approved commands. <a href="#csaw-ctf-qualifiers">2nd in US/Canada</a> at CSAW 2026.', html: true },
+      { name: 'ESP32 Gateway Security Research', when: '2026', desc: 'Co-authored a paper on finding concurrency and RFID/EEPROM bugs in smart-home gateways through emulation. <a href="#csaw-embedded-security-challenge">CSAW finalist</a>.', html: true },
+    ],
+  },
+  {
+    name: 'Competitions',
+    items: [
+      { name: 'CSAW CTF Qualifiers', when: '2026', desc: '5th overall, 2nd in US and Canada, with <a href="#alpha">Alpha</a> solving autonomously. Finals in November.', html: true },
+      { name: 'NCAE CyberGames', when: '2025', desc: '2nd place, Southeast regionals.' },
+      { name: 'Crimson Defense CTF', when: '2025', desc: '4th place.' },
+      { name: 'CSAW Embedded Security Challenge', when: '2026', desc: 'National finalist for the <a href="#esp32-gateway-security-research">ESP32 research</a>.', html: true },
+      { name: 'National Cyber League', when: '2021 to 2026', desc: 'Nine seasons. 100th percentile individual in Spring 2025, 99th team in Spring 2025 and 2026.' },
+    ],
+  },
+  {
+    name: 'Hackathons',
+    items: [
+      { name: 'StockSense', when: '2026', desc: 'AI inventory intelligence to cut food waste for small businesses. Honorable Mention, UGAHacks 11. <a href="https://devpost.com/software/stock-sense-mrakvp" target="_blank" rel="noopener">Devpost</a>', html: true },
+      { name: 'Star Tank', when: '2025', desc: 'Shark Tank-style financial literacy quiz in Unity, with adaptive difficulty. UGAHacks X. <a href="https://devpost.com/software/financial-analysis-game" target="_blank" rel="noopener">Devpost</a>', html: true },
+      { name: 'Super Aid', when: '2024', desc: 'Emergency volunteer app in Unity and Firebase, built in 36 hours at UGAHacks 9. <a href="https://github.com/Legendile7/Super-Aid" target="_blank" rel="noopener">GitHub</a>', html: true },
+    ],
+  },
+  {
+    name: 'Machine Learning',
+    items: [
+      { name: 'Video Relighting with Latent Bridge Matching', when: '2026', desc: 'Segments a subject out of video and relights it on a new background with single-step LBM. Optical flow fills skipped frames to cut render time. <a href="https://www.linkedin.com/posts/divesh2027_computervision-deeplearning-artificialintelligence-activity-7480599114653614080-JPyM" target="_blank" rel="noopener">Writeup</a>', html: true },
+    ],
+  },
+  {
+    name: 'Talks',
+    items: [
+      { name: 'International Town and Gown Association', when: '2026', desc: '“Signals and Safeguards.” How university cyber clinics strengthen public safety in college towns.' },
+      { name: 'Engaged Scholarship Consortium', when: '2025', desc: '“Bridging Learning and Community Impact.” The CyberArch clinic model and how to start one, with Manav Dhanani.' },
     ],
   },
   {
     name: 'Games',
     items: [
-      { name: 'Poima Engine', when: '2026', desc: 'An agent-native 3D game engine under Overshock Studios: a headless C++20 core with a documented world API that humans and AI agents edit through, plus Vulkan rendering and an optional desktop editor. I architect it and direct the agents that build it. Source on <a href="https://github.com/OvershockStudios/poimaengine">GitHub</a>.', html: true },
-      { name: 'Games', when: 'Ongoing', desc: 'Games and game jam entries under Overshock Studios.' },
-      { name: 'Neofactum', when: 'Ongoing', desc: 'An RPG overhaul for Minecraft, folding in Warband, a mob AI overhaul with squad tactics and a nemesis system. Published as Renasca.' },
+      { name: 'Poima Engine', when: '2026', desc: 'Agent-native 3D game engine with a C++20 core and Vulkan rendering. I architect it and direct the agents that build it. <a href="https://poimaengine.com" target="_blank" rel="noopener">poimaengine.com</a>', html: true },
+      { name: 'Overshock Studios', when: 'Ongoing', desc: 'My games and game jam entries on <a href="https://overshock-studios.itch.io/" target="_blank" rel="noopener">itch.io</a>.', html: true },
+      { name: 'Renasca Studios', when: 'Ongoing', desc: 'Minecraft mods on <a href="https://www.curseforge.com/members/renascastudios/projects" target="_blank" rel="noopener">CurseForge</a>.', html: true },
+    ],
+  },
+  {
+    name: 'Certifications',
+    items: [
+      { name: 'GIAC Security Essentials (GSEC)', when: '2023 to 2027', desc: '' },
+      { name: 'CompTIA Security+', when: '2023 to 2026', desc: '' },
+      { name: 'GIAC Foundational Cybersecurity Technologies (GFACT)', when: '2022 to 2026', desc: '' },
+      { name: 'Google Cybersecurity Certificate', when: '2024', desc: '' },
+      { name: 'Unity Certified Associate: Game Developer', when: '2022 to 2025', desc: '' },
     ],
   },
 ];
 ---
-<Base title="Work by Divesh Gupta">
+<Base title="Work by Divesh Gupta" description="Work by Divesh Gupta: firmware zero-day research, the Alpha autonomous CTF solver, The Hack Pack, VaultPoint Systems, competition results, talks, games, and certifications.">
   <h1 data-decode>Work</h1>
+  <p class="lead page-intro">Things I've built, researched, and brought people together for.</p>
+  <div class="work-layout">
+    <nav class="index" aria-label="Sections">
+      {groups.map((g) => <a href={`#${slug(g.name)}`}>{g.name}</a>)}
+    </nav>
+    <div>
   {groups.map((g) => (
-    <div class="section">
+    <section class="section work-group" id={slug(g.name)}>
       <h2>{g.name}</h2>
       <ul class="list">
         {g.items.map((it) => (
-          <li>
+          <li id={slug(it.name)}>
             <span class="name">{it.name}</span>
             <span class="when">{it.when}</span>
-            {it.html ? <p class="desc" set:html={it.desc} /> : <p class="desc">{it.desc}</p>}
+            {it.desc && (it.html ? <p class="desc" set:html={it.desc} /> : <p class="desc">{it.desc}</p>)}
+            {it.projects && (
+              <ul class="projects">
+                {it.projects.map((project) => (
+                  <li>
+                    {project.href ? <a href={project.href}>{project.name}</a> : <span class="project-name">{project.name}</span>}: {project.desc}
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   ))}
+    </div>
+  </div>
 </Base>
+
+<script>
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.index a'));
+  const sections = links.map((a) => document.querySelector<HTMLElement>(a.getAttribute('href') ?? '')).filter(Boolean) as HTMLElement[];
+  const mark = () => {
+    const line = window.innerHeight * 0.3;
+    let current = sections[0];
+    for (const s of sections) if (s.getBoundingClientRect().top <= line) current = s;
+    for (const a of links) a.setAttribute('aria-current', a.getAttribute('href') === `#${current.id}` ? 'true' : 'false');
+  };
+  window.addEventListener('scroll', mark, { passive: true });
+  mark();
+</script>
+
+<style>
+  .work-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 40px; align-items: start; }
+  .index { position: sticky; top: 32px; display: flex; flex-direction: column; gap: 10px; margin-top: 3.5rem; padding-top: 18px; }
+  .index a { color: var(--ink-3); font-size: 0.95rem; }
+  .index a:hover { color: var(--ink); text-decoration: none; }
+  .index a[aria-current='true'] { color: var(--accent); }
+  .work-group, .list li { scroll-margin-top: 32px; }
+  .work-group h2 { margin-bottom: 1.25rem; }
+  .projects { grid-column: 1 / -1; padding-left: 20px; margin: 12px 0 0; list-style-type: square; color: var(--ink-2); }
+  .projects li { display: list-item; border: 0; padding: 0 0 12px 4px; }
+  .projects li:last-child { border: 0; padding-bottom: 0; }
+  .projects li::marker { color: var(--accent); font-size: 0.7em; }
+  .project-name { color: var(--ink); }
+  @media (max-width: 760px) {
+    .work-layout { grid-template-columns: 1fr; gap: 0; }
+    .index { position: static; flex-direction: row; flex-wrap: wrap; gap: 8px 20px; margin-top: 2rem; padding-top: 0; }
+    .index a[aria-current='true'] { color: var(--ink-3); }
+  }
+</style>

@@ -1,0 +1,116 @@
+---
+// Full-page deep-space backdrop: layered parallax stars, slow twinkle,
+// the occasional meteor, and a soft nebula wash. Purely decorative.
+---
+<div class="space" aria-hidden="true">
+  <div class="nebula"></div>
+  <canvas class="sky"></canvas>
+  <div class="shade"></div>
+</div>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>('.sky');
+  const ctx = canvas?.getContext('2d');
+  if (canvas && ctx) {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let w = 0, h = 0;
+    let seed = 90210;
+    const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+
+    type Star = { x: number; y: number; z: number; r: number; a: number; phase: number; speed: number; warm: boolean };
+    let stars: Star[] = [];
+    type Meteor = { x: number; y: number; vx: number; vy: number; life: number; max: number };
+    let meteors: Meteor[] = [];
+
+    function populate() {
+      seed = 90210;
+      const count = Math.round((w * h) / 5200);
+      stars = Array.from({ length: count }, () => {
+        const z = rand();
+        return {
+          x: rand() * w, y: rand() * h, z,
+          r: 0.3 + z * z * 1.4 + (rand() < 0.02 ? 1.1 : 0),
+          a: 0.16 + z * 0.42,
+          phase: rand() * Math.PI * 2,
+          speed: 0.4 + rand() * 1.4,
+          warm: rand() < 0.22,
+        };
+      });
+    }
+    function resize() {
+      w = window.innerWidth; h = window.innerHeight;
+      canvas!.width = w * dpr; canvas!.height = h * dpr;
+      canvas!.style.width = `${w}px`; canvas!.style.height = `${h}px`;
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      populate();
+      if (motion.matches) draw(0);
+    }
+
+
+    let last = 0, t = 0, next = 4 + Math.random() * 6, frame = 0;
+    function draw(now: number) {
+      const dt = Math.min((now - (last || now)) / 1000, 0.05); last = now;
+      if (!motion.matches) t += dt;
+      ctx!.clearRect(0, 0, w, h);
+      for (const s of stars) {
+        const tw = motion.matches ? 1 : 0.7 + 0.3 * Math.sin(t * s.speed + s.phase);
+        const drift = motion.matches ? 0 : t * s.z * 1.2;
+        const x = ((s.x + drift) % w + w) % w;
+        const y = s.y;
+        ctx!.globalAlpha = s.a * tw;
+        ctx!.fillStyle = s.warm ? '#ffe3b8' : s.z > 0.75 ? '#dfe9ff' : '#ffffff';
+        ctx!.beginPath(); ctx!.arc(x, y, s.r, 0, Math.PI * 2); ctx!.fill();
+        if (s.r > 1.6) {
+          ctx!.globalAlpha = s.a * tw * 0.35;
+          ctx!.fillRect(x - s.r * 4, y - 0.4, s.r * 8, 0.8);
+          ctx!.fillRect(x - 0.4, y - s.r * 4, 0.8, s.r * 8);
+        }
+      }
+      if (!motion.matches) {
+        next -= dt;
+        if (next <= 0) {
+          next = 7 + Math.random() * 12;
+          const ang = Math.PI / 5 + Math.random() * 0.3;
+          meteors.push({ x: Math.random() * w * 0.8, y: Math.random() * h * 0.35, vx: Math.cos(ang) * 900, vy: Math.sin(ang) * 900, life: 0, max: 0.9 });
+        }
+        meteors = meteors.filter((m) => m.life < m.max);
+        for (const m of meteors) {
+          m.life += dt; m.x += m.vx * dt; m.y += m.vy * dt;
+          const fade = Math.sin((m.life / m.max) * Math.PI);
+          const len = 140;
+          const g = ctx!.createLinearGradient(m.x, m.y, m.x - m.vx / 900 * len, m.y - m.vy / 900 * len);
+          g.addColorStop(0, `rgba(255,255,255,${0.9 * fade})`);
+          g.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx!.globalAlpha = 1; ctx!.strokeStyle = g; ctx!.lineWidth = 1.2; ctx!.lineCap = 'round';
+          ctx!.beginPath(); ctx!.moveTo(m.x, m.y); ctx!.lineTo(m.x - m.vx / 900 * len, m.y - m.vy / 900 * len); ctx!.stroke();
+        }
+      }
+      ctx!.globalAlpha = 1;
+      if (!motion.matches && !document.hidden) frame = requestAnimationFrame(draw);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', () => {
+      cancelAnimationFrame(frame); last = 0;
+      if (!document.hidden) frame = requestAnimationFrame(draw);
+    });
+    motion.addEventListener('change', () => { cancelAnimationFrame(frame); last = 0; frame = requestAnimationFrame(draw); });
+    frame = requestAnimationFrame(draw);
+  }
+</script>
+
+<style>
+  .space { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: var(--bg); }
+  .nebula {
+    position: absolute; inset: -20%;
+    background:
+      radial-gradient(60% 50% at 18% 12%, rgba(104, 92, 196, 0.22), transparent 70%),
+      radial-gradient(45% 40% at 82% 78%, rgba(233, 184, 114, 0.09), transparent 70%),
+      radial-gradient(50% 45% at 70% 20%, rgba(70, 120, 200, 0.14), transparent 70%),
+      radial-gradient(70% 60% at 40% 90%, rgba(140, 60, 110, 0.10), transparent 70%);
+    filter: blur(20px);
+  }
+  .sky { position: absolute; inset: 0; }
+  .shade { position: absolute; inset: 0; background: radial-gradient(ellipse 58% 70% at 50% 42%, rgba(6, 8, 15, 0.72), rgba(6, 8, 15, 0) 70%); }
+</style>

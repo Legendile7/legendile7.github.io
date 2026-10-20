@@ -1,18 +1,51 @@
 ---
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
 ---
-<Base title="About Divesh Gupta">
+<Base title="About Divesh Gupta" description="Divesh Gupta is a computer science student at the University of Georgia who does security research, builds tools, and makes games. Founder of The Hack Pack and cofounder of VaultPoint Systems.">
   <h1 data-decode>About</h1>
-  <div class="section">
-    <p class="lead">I'm a computer science student at the University of Georgia, graduating in 2027, and most of what I do sits somewhere between security research and building things from scratch.</p>
-    <p>On the security side, I run an automated firmware analysis pipeline that rehosts router firmware under QEMU and pairs fuzzing with static analysis to surface zero-days. Three so far, one reproduced on physical hardware and now in coordinated disclosure. I also built Alpha, an autonomous CTF solving framework that runs a policy-constrained AI controller per challenge inside isolated containers. We took it to the CSAW CTF Qualifiers in 2026 and placed 2nd in US/Canada.</p>
-    <p>I founded The Hack Pack, UGA's applied cybersecurity club, in 2024. It's grown to 300 members, won New Student Organization of the Year, and the competition team has placed nationally across more than ten events including NSA Codebreaker. I built thehackpack.org to host our practice challenges and competitions.</p>
-    <p>I lead R&amp;D at UGA CyberArch, a clinic that gives free CIS IG1 security reviews to small businesses and local governments across Georgia, and I've presented the clinic model at national conferences.</p>
-    <p>In 2026 I cofounded VaultPoint Systems through UGA's Franklin CREATE program. Our first product, Zetadeck, is live. Outside of security I run Overshock Studios. I make games there, and I'm the architect behind Poima, an agent-native game engine: I design the systems and set the direction, and development agents do most of the implementation through its API. I also publish Minecraft mods as Renasca.</p>
-    <p>Certifications: GIAC GSEC, GIAC GFACT, Google Cybersecurity Certificate.</p>
+  <div class="about-layout section">
+    <div class="about-intro">
+      <p class="lead">I'm Divesh, a computer science student at UGA. I do security research, build tools, and make games.</p>
+      <p class="personal-note">Athens, Georgia. UGA class of 2027.</p>
+      <a class="text-link" href="/work/">Explore my work <Icon name="arrow" size={18} /></a>
+    </div>
+    <div class="interests">
+      <section class="interest">
+        <h2><Icon name="shield" />Finding the Cracks</h2>
+        <p>I research vulnerabilities and build security tools, from <a href="/work/#firmware-zero-day-pipeline">firmware analysis</a> to <a href="/work/#alpha">Alpha</a>, an autonomous CTF solver. I also lead R&amp;D at <a href="/work/#uga-cyberarch-r-d-lead">UGA CyberArch</a>.</p>
+      </section>
+      <section class="interest">
+        <h2><Icon name="people" />Building a Community</h2>
+        <p>I founded <a href="https://thehackpack.org" target="_blank" rel="noopener">The Hack Pack</a> in 2024. Today, 300 members learn, build, and compete together at UGA.</p>
+      </section>
+      <section class="interest">
+        <h2><Icon name="code" />Making Things of My Own</h2>
+        <p>I cofounded <a href="https://vaultpoint.systems" target="_blank" rel="noopener">VaultPoint Systems</a>, make games at <a href="https://overshock-studios.itch.io/" target="_blank" rel="noopener">Overshock Studios</a>, and design <a href="https://poimaengine.com" target="_blank" rel="noopener">Poima Engine</a>. I publish Minecraft mods as <a href="https://www.curseforge.com/members/renascastudios/projects" target="_blank" rel="noopener">Renasca Studios</a>.</p>
+      </section>
+    </div>
   </div>
-  <div class="section">
-    <h2>Get in touch</h2>
-    <p>Email is best: <a href="mailto:Divesh.Gupta@uga.edu">Divesh.Gupta@uga.edu</a>. You can also find me on <a href="https://github.com/Legendile7">GitHub</a> and <a href="https://www.linkedin.com/in/divesh2027/">LinkedIn</a>.</p>
-  </div>
+  <section class="contact section">
+    <h2>Say Hello</h2>
+    <div>
+      <p>Have something in mind? Email is the best way to reach me.</p>
+      <a class="text-link" href="mailto:Divesh.Gupta@uga.edu">Divesh.Gupta@uga.edu <Icon name="arrow" size={18} /></a>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .about-layout { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: clamp(40px, 7vw, 100px); }
+  .about-intro .lead { color: var(--ink); font-size: clamp(1.4rem, 2.2vw, 1.75rem); line-height: 1.45; }
+  .personal-note { margin-top: 2rem; font-size: 0.95rem; }
+  .interest { padding: 24px 0; border-top: 1px solid var(--rule); }
+  .interest:first-child { padding-top: 0; border-top: 0; }
+  .interest:last-child { padding-bottom: 0; }
+  .interest h2 { display: flex; align-items: center; gap: 12px; font-size: 1.2rem; margin-bottom: 12px; color: var(--ink); }
+  .interest h2 :global(svg) { color: var(--accent); filter: drop-shadow(0 0 8px rgba(233,184,114,0.5)); }
+  .contact { border-top: 1px solid var(--rule); padding-top: 32px; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: clamp(40px, 7vw, 100px); }
+  @media (max-width: 760px) {
+    .about-layout, .contact { grid-template-columns: 1fr; gap: 36px; }
+    .contact { gap: 0; }
+  }
+</style>

@@ -1,10 +1,43 @@
 ---
+import Starfield from '../components/Starfield.astro';
+import Horizon from '../components/Horizon.astro';
 interface Props {
   title: string;
   description?: string;
+  homepage?: boolean;
 }
-const { title, description = 'Divesh Gupta. Security engineer, founder, and game developer in Athens, Georgia.' } = Astro.props;
+const { title, description = 'Divesh Gupta is a security researcher, founder, and game developer at the University of Georgia. Firmware vulnerability research, autonomous CTF tooling, and The Hack Pack.', homepage = false } = Astro.props;
 const path = Astro.url.pathname;
+const canonical = new URL(path, Astro.site).href;
+const ogImage = new URL('/og.png', Astro.site).href;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Divesh Gupta',
+  url: Astro.site?.href,
+  image: ogImage,
+  email: 'mailto:Divesh.Gupta@uga.edu',
+  jobTitle: 'Security Researcher',
+  description,
+  affiliation: [
+    { '@type': 'CollegeOrUniversity', name: 'University of Georgia' },
+    { '@type': 'Organization', name: 'VaultPoint Systems', url: 'https://vaultpoint.systems' },
+    { '@type': 'Organization', name: 'The Hack Pack', url: 'https://thehackpack.org' },
+    { '@type': 'Organization', name: 'UGA CyberArch' },
+  ],
+  address: { '@type': 'PostalAddress', addressLocality: 'Athens', addressRegion: 'GA', addressCountry: 'US' },
+  knowsAbout: ['Cybersecurity', 'Vulnerability research', 'Firmware analysis', 'Capture the Flag', 'Game development', 'Agentic AI'],
+  sameAs: [
+    'https://github.com/Legendile7',
+    'https://www.linkedin.com/in/divesh2027/',
+    'https://ctftime.org/team/315917',
+    'https://thehackpack.org',
+    'https://vaultpoint.systems',
+    'https://poimaengine.com',
+    'https://overshock-studios.itch.io/',
+    'https://www.curseforge.com/members/renascastudios/projects',
+  ],
+};
 const links = [
   { href: '/', label: 'Home' },
   { href: '/about/', label: 'About' },
@@ -20,14 +53,35 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#06080f" />
+    <meta name="author" content="Divesh Gupta" />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <meta property="og:type" content={homepage ? 'profile' : 'website'} />
+    <meta property="og:site_name" content="Divesh Gupta" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Divesh Gupta. Security research, tools, and games." />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <header class="top">
+    <Starfield />
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class:list={['top', { 'top-home': homepage }]}>
       <a class="wordmark" href="/">Divesh Gupta</a>
       <nav aria-label="Main">
         {links.map((l) => (
@@ -36,20 +90,22 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
       </nav>
     </header>
 
-    <main>
+    <main id="content" class:list={{ 'home-main': homepage }}>
       <slot />
     </main>
 
+    <Horizon />
     <footer class="bottom">
-      <a href="mailto:Divesh.Gupta@uga.edu">Divesh.Gupta@uga.edu</a>
-      <a href="https://github.com/Legendile7">GitHub</a>
-      <a href="https://www.linkedin.com/in/divesh2027/">LinkedIn</a>
+      <a class="footer-email" href="mailto:Divesh.Gupta@uga.edu">Divesh.Gupta@uga.edu</a>
+      <a href="https://github.com/Legendile7" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/divesh2027/" target="_blank" rel="noopener">LinkedIn</a>
     </footer>
 
     <script>
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&*';
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const seen = sessionStorage.getItem('decoded') === '1';
+      let seen = false;
+      try { seen = sessionStorage.getItem('decoded') === '1'; } catch {}
 
       function decode(el: HTMLElement) {
         const text = el.textContent ?? '';
@@ -73,7 +129,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
           el.setAttribute('aria-label', el.textContent ?? '');
           setTimeout(() => decode(el), 120 + i * 160);
         });
-        sessionStorage.setItem('decoded', '1');
+        try { sessionStorage.setItem('decoded', '1'); } catch {}
       }
     </script>
   </body>
@@ -81,92 +137,104 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
 
 <style is:global>
   :root {
-    --bg: #ffffff;
-    --ink: #1b1b1b;
-    --ink-2: #5c5c5c;
-    --ink-3: #9a9a9a;
-    --rule: #e4e4e4;
-    --accent: #722f37;
+    --bg: #06080f;
+    --bg-2: #0b0e1a;
+    --ink: #ece9e1;
+    --ink-2: #aab0c2;
+    --ink-3: #6f7389;
+    --rule: rgba(236, 233, 225, 0.1);
+    --rule-2: rgba(236, 233, 225, 0.18);
+    --accent: #e9b872;
+    --accent-2: #f6d9a3;
+    --cool: #8fb3ff;
+    --glass: rgba(10, 13, 26, 0.55);
     --measure: 62ch;
     --gutter: clamp(20px, 5vw, 56px);
-    color-scheme: light dark;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #161616;
-      --ink: #ececec;
-      --ink-2: #a8a8a8;
-      --ink-3: #6f6f6f;
-      --rule: #2e2e2e;
-      --accent: #d46a7e;
-    }
+    color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
   body {
+    isolation: isolate;
     margin: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     background: var(--bg);
-    color: var(--ink);
-    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+    color: var(--ink-2);
+    font-family: 'DM Sans', system-ui, sans-serif;
     font-size: 17px;
     line-height: 1.6;
     font-weight: 400;
+    -webkit-font-smoothing: antialiased;
   }
 
-  a { color: var(--accent); text-decoration: none; text-underline-offset: 3px; }
-  a:hover, a:focus-visible { text-decoration: underline; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  button { font: inherit; }
+  svg { flex-shrink: 0; vertical-align: middle; }
+  .skip-link { position: fixed; top: -100px; left: 16px; z-index: 10; background: var(--bg); padding: 10px; }
+  .skip-link:focus { top: 12px; }
+  a { color: var(--accent); text-decoration: none; text-underline-offset: 3px; transition: color 160ms ease; }
+  a:hover, a:focus-visible { color: var(--accent-2); text-decoration: underline; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-  h1, h2, h3 { font-weight: 500; line-height: 1.15; margin: 0; letter-spacing: -0.01em; }
-  h1 { font-size: clamp(2rem, 1.4rem + 2.6vw, 3.4rem); font-variation-settings: 'opsz' 96; }
-  h2 { font-size: 1.6rem; font-variation-settings: 'opsz' 48; }
-  h3 { font-size: 1.1rem; }
+  h1, h2, h3 { font-weight: 500; line-height: 1.12; margin: 0; letter-spacing: -0.02em; color: var(--ink); }
+  h1 { font-size: clamp(2.2rem, 1.4rem + 3vw, 3.8rem); }
+  h2 { font-size: 1.5rem; color: var(--accent); }
+  h3 { font-size: 1.1rem; font-weight: 500; }
   p { margin: 0 0 1em; max-width: var(--measure); }
   p:last-child { margin-bottom: 0; }
 
-  .top, .bottom {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 24px;
-    padding: 24px var(--gutter);
-  }
-  .top { align-items: baseline; justify-content: space-between; }
-  .wordmark { color: var(--ink); font-weight: 500; }
-  .top nav { display: flex; gap: 22px; }
-  .top nav a { color: var(--ink-2); }
-  .top nav a[aria-current='page'] { color: var(--ink); text-decoration: underline; }
 
-  main { flex: 1; padding: 24px var(--gutter) 80px; }
+  .top, .bottom { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 22px 0; }
+  .top, main, .bottom { width: min(1120px, calc(100% - var(--gutter) * 2)); margin-inline: auto; }
+  .top { align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule); }
+  .top-home { border-bottom: 0; }
+  .wordmark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 500; letter-spacing: -0.02em; }
+  .top nav { display: flex; gap: 26px; font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .top nav a { color: var(--ink-2); position: relative; padding: 6px 0; }
+  .top nav a:hover { color: var(--ink); text-decoration: none; }
+  .top nav a[aria-current='page'] { color: var(--accent); }
 
-  .bottom { border-top: 1px solid var(--rule); color: var(--ink-2); font-size: 0.95rem; }
+  main { flex: 1; padding: clamp(40px, 6vw, 80px) 0 clamp(60px, 8vw, 120px); }
+  .home-main { padding-top: 0; padding-bottom: 0; }
+
+  .bottom { border-top: 1px solid var(--rule); color: var(--ink-2); font-size: 0.92rem; align-items: center; }
+  body > .bottom { width: 100%; padding-inline: max(var(--gutter), calc((100% - 1120px) / 2)); background: #03040a; margin-top: -1px; border-top: 0; }
   .bottom a { color: var(--ink-2); }
+  .bottom a:hover { color: var(--ink); }
+  .footer-email { margin-right: auto; }
 
-  .lead { font-size: 1.25rem; color: var(--ink-2); }
+  .lead { font-size: 1.25rem; color: var(--ink); }
   .section { margin-top: 3.5rem; }
   .section + .section { margin-top: 4rem; }
   .section h2 { margin-bottom: 1.25rem; }
 
-  .list { list-style: none; margin: 0; padding: 0; max-width: 760px; }
+  .list { list-style: none; margin: 0; padding: 0; min-width: 0; }
   .list li {
     border-top: 1px solid var(--rule);
-    padding: 16px 0;
+    padding: 18px 0;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 4px 24px;
     align-items: baseline;
   }
   .list li:last-child { border-bottom: 1px solid var(--rule); }
-  .list .name { font-weight: 500; color: var(--ink); }
-  .list .when { color: var(--ink-3); font-size: 0.95rem; white-space: nowrap; }
-  .list .desc { grid-column: 1 / -1; color: var(--ink-2); margin: 0; }
-  .list .desc a { white-space: nowrap; }
+  .list .name { font-weight: 500; color: var(--ink); font-size: 1.05rem; }
+  .list .when { color: var(--ink-3); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+  .list .desc { grid-column: 1 / -1; color: var(--ink-2); margin: 0; max-width: 70ch; }
+  .text-link { display: inline-flex; align-items: center; gap: 10px; }
+  .text-link svg { transition: transform 200ms ease; }
+  .text-link:hover svg { transform: translateX(4px); }
+  .page-intro { margin-top: 1.25rem; }
 
   @media (max-width: 600px) {
     body { font-size: 16px; }
+    .top { gap: 14px; padding-block: 18px 14px; }
+    .top nav { gap: 18px; width: 100%; }
+    .bottom { gap: 12px 24px; }
+    .footer-email { flex-basis: 100%; }
     .list li { grid-template-columns: 1fr; }
     .list .when { grid-row: 1; }
   }

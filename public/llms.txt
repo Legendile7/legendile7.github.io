@@ -1,0 +1,53 @@
+# Divesh Gupta
+
+> Security researcher, founder, and game developer. Computer science at the University of Georgia, class of 2027. Based in Athens, Georgia.
+
+Divesh Gupta does security research, builds tools, and makes games.
+
+## Pages
+
+- [Home](https://diveshgupta.com/): Introduction.
+- [About](https://diveshgupta.com/about/): Who he is and what he works on.
+- [Work](https://diveshgupta.com/work/): Experience, security research, competitions, hackathons, machine learning, talks, games, and certifications.
+- [Resume](https://diveshgupta.com/resume/): Resume as PDF.
+
+## Experience
+
+- VaultPoint Systems, Cofounder (2026 to now). Products: Zetadeck, RiskGuard. https://vaultpoint.systems
+- UGA CyberArch, R&D Lead (2025 to now). Cybersecurity clinic at the Carl Vinson Institute of Government.
+- The Hack Pack, Founding President (2024 to now). UGA's applied cybersecurity club, 300 members. https://thehackpack.org
+
+## Security research
+
+- Firmware Zero-Day Pipeline (2026): automated vulnerability research for router firmware under QEMU. Three zero-days, one in coordinated disclosure.
+- Alpha (2026): autonomous CTF solving framework. 2nd in US/Canada, CSAW CTF Qualifiers 2026.
+- ESP32 Gateway Security Research (2026): co-authored paper, CSAW Embedded Security Challenge finalist.
+
+## Competitions
+
+- CSAW CTF Qualifiers 2026: 5th overall, 2nd US/Canada.
+- CSAW Embedded Security Challenge 2026: national finalist.
+- NCAE CyberGames 2025: 2nd place, Southeast regionals.
+- Crimson Defense CTF 2025: 4th place.
+- National Cyber League 2021 to 2026: 100th percentile individual, Spring 2025.
+
+## Talks
+
+- International Town and Gown Association 2026: "Signals and Safeguards."
+- Engaged Scholarship Consortium 2025: "Bridging Learning and Community Impact."
+
+## Games
+
+- Poima Engine: agent-native 3D game engine. https://poimaengine.com
+- Overshock Studios: games on itch.io. https://overshock-studios.itch.io/
+- Renasca Studios: Minecraft mods. https://www.curseforge.com/members/renascastudios/projects
+
+## Certifications
+
+GIAC GSEC, CompTIA Security+, GIAC GFACT, Google Cybersecurity Certificate, Unity Certified Associate.
+
+## Contact
+
+- Email: Divesh.Gupta@uga.edu
+- GitHub: https://github.com/Legendile7
+- LinkedIn: https://www.linkedin.com/in/divesh2027/
