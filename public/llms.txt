@@ -16,7 +16,7 @@ Divesh Gupta does security research, builds tools, and makes games.
 - VaultPoint Systems, Cofounder (2026 to now). Products: Zetadeck, RiskGuard. https://vaultpoint.systems
 - UGA CyberArch, R&D Lead (2025 to now). Cybersecurity clinic at the Carl Vinson Institute of Government.
 - The Hack Pack, Founding President (2024 to now). UGA's applied cybersecurity club, 300 members. https://thehackpack.org
-- UGA Game Builders Club, Web Dev Officer. Built the club site. https://gamebuildersclub.com
+- UGA Game Builders Club, Web Dev Officer (2024 to now). Built the club site. https://gamebuildersclub.com
 
 ## Security research
 
